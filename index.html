@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأجير سيارات | تجربة سلسة وعروض واضحة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --panel: #ffffff;
+            --accent: #1d9bf0;
+            --accent-2: #22c55e;
+            --text: #0f172a;
+            --muted: #52607b;
+            --border: #e5e7ef;
+            --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: "Cairo", Arial, sans-serif;
+            direction: rtl;
+            scroll-behavior: smooth;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(29, 155, 240, 0.18), transparent 30%),
+                radial-gradient(circle at 80% 0%, rgba(34, 197, 94, 0.14), transparent 34%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 26px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+        .topbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-weight: 800; color: #0b1328; }
+        .logo-badge {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: grid; place-items: center;
+            font-size: 20px; color: #fff; font-weight: 900;
+        }
+        nav { display: flex; gap: 12px; }
+        nav a {
+            color: var(--muted); text-decoration: none; padding: 10px 14px;
+            border-radius: 10px; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease; font-weight: 600;
+        }
+        nav a:hover, nav a.active { color: var(--text); background: rgba(29,155,240,0.12); border:1px solid rgba(29,155,240,0.35); transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,23,42,0.12); }
+
+        .hero {
+            max-width: 1200px; margin: 26px auto 10px; padding: 32px 20px 10px;
+            display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 28px; align-items: center;
+        }
+        .hero-text h1 { margin:0 0 14px; font-size: clamp(30px,4vw,44px); line-height:1.2; }
+        .hero-text p { margin:0 0 18px; color: var(--muted); font-size:16px; line-height:1.7; }
+        .hero-visual img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+            background: rgba(34,197,94,0.16); color:#0f5132; font-weight:700; border:1px solid rgba(34,197,94,0.3); margin-bottom:10px; }
+        .hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
+        .btn { border:none; cursor:pointer; border-radius:12px; padding:12px 16px; font-size:15px; font-weight:800; font-family:"Cairo", Arial, sans-serif;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), #0ea5e9); color:#fff; box-shadow: var(--shadow); }
+        .btn-ghost { background:#eef3fb; color:var(--text); border:1px solid var(--border); }
+        .btn:hover { transform: translateY(-1px); }
+        .btn.disabled { opacity:0.55; cursor:not-allowed; box-shadow:none; transform:none; }
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:16px; }
+        .stat-card { background:#f5f7fb; border:1px solid #dbe3ef; border-radius:12px; padding:12px 14px; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(15,23,42,0.12); border-color: rgba(29,155,240,0.35); }
+        .stat-card strong { display:block; font-size:20px; }
+        .stat-card span { color:var(--muted); font-size:13px; }
+
+        .cars-section { max-width:1200px; margin:10px auto 40px; padding:0 20px 30px; scroll-margin-top:120px; }
+        .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px; }
+        .section-head h2 { margin:0; font-size:22px; }
+        .section-head p { margin:0; color:var(--muted); font-size:14px; }
+
+        .car-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,320px)); gap:18px; justify-content:center; }
+        .car-item {
+            background: var(--panel); border:1px solid var(--border); border-radius: var(--radius);
+            box-shadow: var(--shadow); overflow:hidden; display:flex; flex-direction:column; gap:12px;
+            cursor:pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; height:100%; position:relative;
+        }
+        .car-item:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(15,23,42,0.12); }
+        .car-item img { width:100%; height: clamp(220px, 32vw, 280px); object-fit: cover; transition: transform 0.35s ease; }
+        .car-item:hover img { transform: scale(1.03); }
+        .car-body { padding:0 14px 16px; display:flex; flex-direction:column; gap:8px; flex:1; }
+        .car-desc { flex:1; }
+        .car-desc.more { cursor:pointer; text-decoration: underline; text-decoration-color: rgba(29,155,240,0.5); text-decoration-thickness: 2px; }
+        .car-item h3 { margin:0; font-size:17px; }
+        .car-item p { margin:0; color: var(--muted); font-size:14px; line-height:1.5; }
+        .price { display:flex; align-items:center; gap:6px; font-weight:800; color:var(--text); }
+        .price small { color:var(--muted); font-weight:600; }
+        .pill-badge {
+            display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+            border-radius:999px; background:#eef3fb; border:1px solid #dbe3ef;
+            color:var(--text); font-size:13px; font-weight:700;
+        }
+        .company { margin:0; color:var(--muted); font-size:13px; font-weight:700; }
+        .sub-badge {
+            position:absolute;
+            top:10px;
+            right:10px;
+            padding:6px 10px;
+            border-radius:10px;
+            background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            color:#fff;
+            font-size:12px;
+            font-weight:800;
+            box-shadow:0 10px 24px rgba(15,23,42,0.16);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .steps, .features { max-width:1200px; margin:10px auto 30px; padding:0 20px; }
+        .step-grid, .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+        .step-card, .feature-card {
+            background: var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            padding:14px 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .step-card:hover, .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(15,23,42,0.12);
+            border-color: rgba(29,155,240,0.35);
+        }
+        .step-card h3, .feature-card h3 { margin:0 0 8px; font-size:16px; }
+        .step-card p, .feature-card p { margin:0; color:var(--muted); line-height:1.6; font-size:14px; }
+        .step-number {
+            width:32px; height:32px; border-radius:10px;
+            background: rgba(29,155,240,0.14); color:var(--text);
+            display:grid; place-items:center; font-weight:800; margin-bottom:8px;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content { flex-wrap:nowrap; }
+            .modal-photo { order:2; width:55%; height:420px; }
+            .modal-details { order:1; }
+        }
+
+        .cta-banner {
+            max-width:1200px;
+            margin:30px auto;
+            padding:16px 20px;
+            background:linear-gradient(135deg, rgba(29,155,240,0.12), rgba(34,197,94,0.12));
+            border:1px solid var(--border);
+            border-radius:16px;
+            display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+        }
+
+        footer { border-top:1px solid var(--border); padding:18px 20px 26px; text-align:center; color:var(--muted); background:#eff2f8; }
+
+        .modal { position:fixed; inset:0; background:rgba(15,23,42,0.35); backdrop-filter:blur(6px); display:grid; place-items:center; opacity:0; pointer-events:none; transition:opacity 0.25s ease; padding:16px; z-index:30; }
+        .modal.show { opacity:1; pointer-events:auto; }
+        .modal-card { background:#fff; border-radius:16px; padding:18px; max-width:1100px; width:min(96vw,1100px); box-shadow:0 24px 60px rgba(15,23,42,0.22); border:1px solid #dbe3ef; position:relative; margin:0 auto; }
+        .booking-card { max-width:480px; width:min(92vw,480px); }
+        .modal-close { border:none; background:transparent; font-size:20px; cursor:pointer; color:var(--muted); position:absolute; top:14px; left:14px; }
+        .modal-header { position:relative; padding-left:26px; }
+        .modal-price { font-weight:800; margin:8px 0; color:var(--text); }
+        .modal-features { padding-right:18px; color:var(--muted); line-height:1.6; list-style:disc; padding-inline-start:22px; }
+        .modal-content { display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; }
+        .modal-photo { width:100%; max-width:620px; height:380px; object-fit:cover; border-radius:14px; border:1px solid #dbe3ef; box-shadow:0 12px 28px rgba(15,23,42,0.18); flex-shrink:0; order:2; }
+        .modal-details { flex:1; min-width:280px; order:1; display:flex; flex-direction:column; gap:10px; }
+
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-group label { font-size:14px; color:var(--text); font-weight:700; }
+        .form-group input, .form-group select { padding:10px 12px; border:1px solid #dbe3ef; border-radius:10px; font-family:"Cairo", Arial, sans-serif; font-size:14px; background:#f8fafc; }
+        .error-text { margin-top:4px; padding:6px 10px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; border-radius:8px; font-size:13px; display:none; }
+        .muted { color:var(--muted); text-align:center; }
+        .color-options { display:flex; flex-wrap:wrap; gap:8px; }
+        .color-option {
+            padding:8px 12px;
+            border:1px solid #dbe3ef;
+            border-radius:10px;
+            background:#f8fafc;
+            cursor:pointer;
+            font-family:"Cairo", Arial, sans-serif;
+            font-weight:700;
+            color:var(--text);
+            transition: all 0.15s ease;
+        }
+        .color-option:hover { border-color: rgba(29,155,240,0.35); box-shadow:0 6px 18px rgba(15,23,42,0.08); transform: translateY(-1px); }
+        .color-option.selected { background: rgba(29,155,240,0.12); border-color: rgba(29,155,240,0.35); color: #0b1328; box-shadow:0 10px 26px rgba(15,23,42,0.12); }
+
+        @media (max-width: 640px) {
+            header { padding:18px 14px; }
+            .topbar { flex-direction:column; align-items:flex-start; }
+            nav { width:100%; flex-wrap:wrap; }
+            .hero { margin-top:10px; }
+            .hero-actions { width:100%; }
+            .btn { width:100%; text-align:center; }
+            .section-head { flex-direction:column; align-items:flex-start; }
+            .car-list { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+            .modal-card { width:95vw; max-width:520px; padding:14px; margin:0 auto; }
+            .modal-content { flex-direction:column; align-items:center; }
+            .modal-photo { width:100%; height:260px; order:1; max-width:100%; }
+            .modal-details { order:2; width:100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-badge">dYs-</div>
+            <div>سلس - تأجير سيارات</div>
+        </div>
+        <nav>
+            <a class="active" href="#">الرئيسية</a>
+            <a href="#offers">العروض</a>
+            <a href="#contact">تواصل معنا</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <div class="pill">حجز سريع ومضمون</div>
+        <h1>استأجر سيارتك بسهولة خلال دقائق وبأسعار واضحة</h1>
+        <p>خدمة تأجير سيارات اقتصادية، عائلية، ورياضية بأسعار يومية واضحة ودعم على مدار الساعة. احجز عبر الموقع، حدّد مواعيدك، وسنجهز السيارة في الوقت والمكان الذي يناسبك.</p>
+        <div class="hero-actions">
+            <button class="btn btn-primary" onclick="scrollToCars()">استعرض السيارات</button>
+            <button class="btn btn-ghost" onclick="callUs()">تحدث مع المبيعات</button>
+        </div>
+        <div class="stats">
+            <div class="stat-card"><strong>+120</strong><span>سيارة جاهزة للتسليم</span></div>
+            <div class="stat-card"><strong>24/7</strong><span>دعم مباشر على مدار الساعة</span></div>
+            <div class="stat-card"><strong>8 فروع</strong><span>تغطية في معظم المناطق</span></div>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <img src="https://cdn.salla.sa/PdxeXO/8a2af3ba-9c6c-4598-852c-8bbce2fb4466-1000x494.44444444444-DTthM0g5ziEvsf4pphqE7Qf4tnPLkkGetnJX3S6P.png" alt="سيارة تأجير">
+    </div>
+</section>
+
+<section class="steps">
+    <div class="section-head">
+        <h2>خطوات بسيطة لاستئجار سيارتك</h2>
+        <p>٣ خطوات سهلة وسريعة لاختيار السيارة المناسبة</p>
+    </div>
+    <div class="step-grid">
+        <div class="step-card"><div class="step-number">1</div><h3>اختر السيارة</h3><p>تصفح السيارات حسب الفئة أو السعر، واختر السيارة التي تناسب احتياجك.</p></div>
+        <div class="step-card"><div class="step-number">2</div><h3>حدد المواعيد</h3><p>حدد موقع الاستلام ووقت البدء والنهاية، وأضف أي ملاحظات خاصة.</p></div>
+        <div class="step-card"><div class="step-number">3</div><h3>أكمل الطلب</h3><p>أدخل بيانات التواصل واضغط إرسال ليصلك تأكيد الحجز عبر واتساب.</p></div>
+    </div>
+</section>
+
+<section id="offers" class="cars-section">
+    <div class="section-head">
+        <h2>سيارات مختارة لك</h2>
+        <p>خيارات اقتصادية، عائلية، ورياضية بأسعار يومية واضحة</p>
+    </div>
+
+    <div class="car-list" id="cars">
+        <p class="muted">جاري تحميل السيارات ...</p>
+    </div>
+</section>
+
+<section class="features">
+    <div class="section-head">
+        <h2>مزايا تجعل تجربتك أسهل</h2>
+        <p>خدمة موثوقة، دعم سريع، وتغطية واسعة</p>
+    </div>
+    <div class="feature-grid">
+        <div class="feature-card"><h3>تأمين شامل وخدمة طوارئ</h3><p>تغطية تأمينية كاملة على معظم السيارات مع خدمة المساعدة على الطريق.</p></div>
+        <div class="feature-card"><h3>إجراءات رقمية بالكامل</h3><p>اختيار السيارة، الدفع، وإدارة الحجز كلها من مكان واحد بسهولة.</p></div>
+        <div class="feature-card"><h3>سياسات استلام مرنة</h3><p>استلام من الفروع أو التوصيل حسب موقعك مع مواعيد مرنة.</p></div>
+        <div class="feature-card"><h3>صيانة دورية</h3><p>فحص وصيانة دورية للسيارات لضمان تجربة آمنة ومريحة.</p></div>
+    </div>
+</section>
+
+<div class="cta-banner" id="contact">
+    <div>
+        <h3 style="margin:0 0 6px;">جاهز لحجز سيارتك الآن؟</h3>
+        <p style="margin:0; color:var(--muted);">تواصل معنا أو استعرض السيارات واختر ما يناسبك.</p>
+    </div>
+    <div class="hero-actions" style="gap:8px;">
+        <button class="btn btn-primary" onclick="callUs()">تواصل واتساب: 0500187855</button>
+        <button class="btn btn-ghost" onclick="scrollToCars()">استعراض السيارات</button>
+    </div>
+</div>
+
+<div class="modal" id="carModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+        </div>
+        <div class="modal-content">
+            <img id="modalImg" class="modal-photo" src="" alt="سيارة">
+            <div class="modal-details">
+                <h3 id="modalTitle" style="margin:0 0 6px;"></h3>
+                <p id="modalCompany" class="company"></p>
+                <p id="modalDesc" style="margin:0; color:var(--muted);"></p>
+                <div class="modal-price" id="modalPrice"></div>
+                <ul class="modal-features" id="modalFeatures"></ul>
+                <div class="hero-actions" style="margin-top:8px;">
+                    <button class="btn btn-primary" id="modalRentBtn">احجز الآن</button>
+                    <button class="btn btn-ghost" type="button" onclick="closeDetailModal()">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="bookingModal">
+    <div class="modal-card booking-card">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            <h3 style="margin:0 0 6px;">إرسال طلب الحجز</h3>
+            <p id="bookingCarName" style="margin:0; color:var(--muted);"></p>
+        </div>
+        <form id="bookingForm" novalidate class="modal-features" style="list-style:none; padding:0; margin:10px 0 0; display:flex; flex-direction:column; gap:10px;">
+            <div class="form-group">
+                <label for="customerName">الاسم الكامل</label>
+                <input id="customerName" name="customerName" type="text" required placeholder="اكتب اسمك الكامل">
+                <div id="nameError" class="error-text" aria-live="polite">يرجى إدخال الاسم.</div>
+            </div>
+            <div class="form-group">
+                <label for="customerPhone">رقم الجوال</label>
+                <input id="customerPhone" name="customerPhone" type="tel" required placeholder="05xxxxxxxx">
+                <div id="phoneError" class="error-text" aria-live="polite">يرجى إدخال رقم جوال صحيح.</div>
+            </div>
+            <div class="form-group">
+                <label for="customerEmail">البريد الإلكتروني</label>
+                <input id="customerEmail" name="customerEmail" type="email" required placeholder="example@email.com">
+                <div id="emailError" class="error-text" aria-live="polite">يرجى إدخال بريد إلكتروني صحيح.</div>
+            </div>
+            <div class="form-group">
+                <label for="pickupDate">تاريخ الاستلام</label>
+                <input id="pickupDate" name="pickupDate" type="date" required>
+                <div id="pickupError" class="error-text" aria-live="polite">يجب أن يكون تاريخ الاستلام اليوم أو بعده.</div>
+            </div>
+            <div class="form-group">
+                <label for="endDate">نهاية الحجز</label>
+                <input id="endDate" name="endDate" type="date" required>
+                <div id="endError" class="error-text" aria-live="polite">يجب أن يكون تاريخ النهاية بعد الاستلام.</div>
+            </div>
+            <div class="form-group">
+                <label>لون السيارة</label>
+                <div id="colorOptions" class="color-options"></div>
+                <div id="colorError" class="error-text" aria-live="polite">يرجى اختيار لون السيارة.</div>
+            </div>
+            <div id="pricingSummary" style="background:#f8fafc;border:1px solid #dbe3ef;border-radius:10px;padding:10px 12px;display:none;">
+                <div style="font-weight:700;margin-bottom:4px;">التكلفة التقديرية</div>
+                <div id="daysSummary" style="color:var(--muted);">—</div>
+                <div id="totalSummary" style="color:var(--muted);">—</div>
+            </div>
+            <div class="hero-actions" style="margin-top:8px;">
+                <button class="btn btn-primary" type="submit">إرسال الطلب</button>
+                <button class="btn btn-ghost" type="button" onclick="closeBookingModal()">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 سلس لتأجير السيارات. جميع الحقوق محفوظة.</p>
+    <p>لخدمة العملاء (واتساب): 0500187855</p>
+</footer>
+
+<script>
+    function scrollToCars() {
+        const target = document.getElementById('offers') || document.getElementById('cars');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function callUs() {
+        const waURL = 'https://wa.me/966500187855?text=' + encodeURIComponent('مرحباً، أود الاستفسار عن حجز سيارة.');
+        window.open(waURL, '_blank');
+    }
+
+    // تفعيل سكرول سلس لروابط الهيدر
+    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const id = link.getAttribute('href').replace('#', '');
+            const target = id ? document.getElementById(id) : null;
+            e.preventDefault();
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+
+    const modal = document.getElementById('carModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalCompany = document.getElementById('modalCompany');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalFeatures = document.getElementById('modalFeatures');
+    const modalRentBtn = document.getElementById('modalRentBtn');
+    const modalImg = document.getElementById('modalImg');
+    const bookingModal = document.getElementById('bookingModal');
+    const bookingCarName = document.getElementById('bookingCarName');
+    const bookingForm = document.getElementById('bookingForm');
+    const pickupInput = document.getElementById('pickupDate');
+    const endInput = document.getElementById('endDate');
+    const pickupError = document.getElementById('pickupError');
+    const endError = document.getElementById('endError');
+    const nameError = document.getElementById('nameError');
+    const phoneError = document.getElementById('phoneError');
+    const emailError = document.getElementById('emailError');
+    const nameInput = document.getElementById('customerName');
+    const phoneInput = document.getElementById('customerPhone');
+    const emailInput = document.getElementById('customerEmail');
+    const carsContainer = document.getElementById('cars');
+    const pricingSummary = document.getElementById('pricingSummary');
+    const daysSummary = document.getElementById('daysSummary');
+    const totalSummary = document.getElementById('totalSummary');
+    const colorOptions = document.getElementById('colorOptions');
+    const colorError = document.getElementById('colorError');
+
+    const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyRBFgQ_jvROeb8qThERMAwOC0Y05FjuPzOxc286FOHRNlJuBS-eROOHNh-QWnk5HzJ/exec';
+
+    async function loadCarsFromSheet() {
+        if (!carsContainer) return;
+        try {
+            carsContainer.innerHTML = '<p class="muted">جاري تحميل السيارات ...</p>';
+            const res = await fetch(GOOGLE_SHEET_API_URL, { cache: 'no-cache', mode: 'cors' });
+            const raw = await res.text();
+            if (!res.ok) throw new Error('Status ' + res.status + ': ' + raw.slice(0, 200));
+            let data;
+            try { data = JSON.parse(raw); }
+            catch { throw new Error('تعذر قراءة استجابة JSON: ' + raw.slice(0, 200)); }
+
+            const rows = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+            if (!Array.isArray(rows) || rows.length === 0) {
+                carsContainer.innerHTML = '<p class="muted">لا توجد سيارات بعد. تأكد من نشر السكربت بصلاحية "Anyone" ومن صحة الرابط.</p>';
+                return;
+            }
+
+            carsContainer.innerHTML = '';
+            rows.forEach((row, idx) => {
+                const card = createCarCard({
+                    name: row.Car_Name || `سيارة ${idx + 1}`,
+                    desc: row.Car_Desc || '',
+                    price: row.Car_amount_per_day || '',
+                    company: row.car_company || row.Car_company || '',
+                    people: row.peapol_per_car || row.Peapol_per_car || '',
+                    available: row.cars_for_rent ?? row.Cars_for_rent ?? row.carsForRent ?? row.CarsForRent ?? '',
+                    img: row.Car_image || '',
+                    maxDate: row.maximum_date || row.Maximum_date || '',
+                    advantages: row['car Advantages'] || row.carAdvantages || '',
+                    colors: row.car_colors || row.Car_colors || '',
+                    sub: row.car_sub || row.Car_sub || ''
+                });
+                carsContainer.appendChild(card);
+            });
+            carsContainer.querySelectorAll('.car-item').forEach(wireCardEvents);
+        } catch (err) {
+            console.warn('تعذر جلب السيارات:', err);
+            carsContainer.innerHTML = '<p class="muted">تعذر تحميل السيارات من الشيت. تأكد من نشر السكربت بصلاحية "Anyone" ومن صحة الرابط.</p>';
+        }
+    }
+
+    function createCarCard(data) {
+        const card = document.createElement('div');
+        card.className = 'car-item';
+
+        const priceValue = data.price ? `${data.price} ر.س` : '';
+        const priceText = data.price ? `${data.price} ر.س / يوم` : '';
+        const descText = data.desc || '';
+        const limit = 130;
+        const needsMore = descText.length > limit;
+        const displayDesc = needsMore ? (descText.slice(0, limit) + '... المزيد') : descText;
+        const availableRaw = (data.available ?? '').toString().trim();
+        const availableCount = availableRaw === '' ? NaN : Number(availableRaw);
+        const isAvailable = Number.isFinite(availableCount) ? availableCount > 0 : true;
+        const rate = Number.isFinite(Number((data.price || '').toString().replace(/[^\d.]/g, ''))) ? Number((data.price).toString().replace(/[^\d.]/g, '')) : NaN;
+
+        card.dataset.name = data.name;
+        card.dataset.desc = descText;
+        card.dataset.price = priceText;
+        card.dataset.rate = Number.isFinite(rate) ? rate : '';
+        card.dataset.company = data.company || '';
+        card.dataset.people = data.people || '';
+        card.dataset.sub = data.sub || '';
+        card.dataset.features = (data.advantages || '').toString();
+        card.dataset.img = data.img;
+        card.dataset.maxdate = data.maxDate || '';
+        card.dataset.available = isAvailable ? '1' : '0';
+        card.dataset.colors = (data.colors || '').toString();
+
+        const imgSrc = data.img || 'https://via.placeholder.com/900x600?text=Car';
+
+        card.innerHTML = `
+            ${data.sub ? `<div class="sub-badge">${data.sub}</div>` : ''}
+            <img src="${imgSrc}" alt="${data.name || 'سيارة'}">
+            <div class="car-body">
+                <h3>${data.name || ''}</h3>
+                ${data.company ? `<p class="company">${data.company}</p>` : ''}
+                ${data.people ? `<span class="pill-badge">عدد الركاب: ${data.people}</span>` : ''}
+                <p class="car-desc ${needsMore ? 'more' : ''}">${displayDesc}</p>
+                <div class="price">${priceValue || '—'} <small>/ يوم</small></div>
+                <button class="btn btn-primary detail-btn ${isAvailable ? '' : 'disabled'}" ${isAvailable ? '' : 'disabled'}>${isAvailable ? 'احجز الآن' : 'غير متوفر'}</button>
+            </div>
+        `;
+        return card;
+    }
+
+    function openCarDetails(card) {
+        modalTitle.textContent = card.dataset.name || '';
+        modalDesc.textContent = card.dataset.desc || '';
+        modalPrice.textContent = card.dataset.price || '';
+        if (modalCompany) modalCompany.textContent = card.dataset.company || '';
+        const available = card.dataset.available !== '0';
+        if (!available) {
+            modalPrice.textContent = 'غير متوفر حالياً';
+            modalRentBtn.textContent = 'غير متوفر';
+            modalRentBtn.classList.add('disabled');
+            modalRentBtn.disabled = true;
+            modalRentBtn.onclick = null;
+        } else {
+            modalRentBtn.textContent = 'احجز الآن';
+            modalRentBtn.classList.remove('disabled');
+            modalRentBtn.disabled = false;
+            modalRentBtn.onclick = function() { openBookingModal(card.dataset.name || 'سيارة', card.dataset.maxdate || '', card.dataset.rate || '', card.dataset.colors || ''); };
+        }
+
+        modalFeatures.innerHTML = '';
+        const features = (card.dataset.features || '')
+            .split(/[\n\r|]+/)
+            .map(f => f.trim())
+            .filter(Boolean);
+        features.forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature.trim();
+            modalFeatures.appendChild(li);
+        });
+
+        const imgFromCard = card.dataset.img || (card.querySelector('img') ? card.querySelector('img').src : '');
+        modalImg.src = imgFromCard || 'https://via.placeholder.com/400x250?text=Car';
+        modalImg.alt = card.dataset.name || 'سيارة';
+
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function parseToISO(dateStr = '') {
+        if (!dateStr) return '';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+        const parts = dateStr.split(/[\/\-]/);
+        if (parts.length === 3) {
+            // assume dd/mm/yyyy
+            const [d, m, y] = parts.map(p => p.padStart(2, '0'));
+            if (y?.length === 4) return `${y}-${m}-${d}`;
+        }
+        return '';
+    }
+
+    function openBookingModal(carName, maxDateStr, rateStr, colorsRaw = '') {
+        bookingCarName.textContent = 'السيارة: ' + (carName || '');
+        bookingModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        bookingForm.dataset.car = carName || '';
+        bookingForm.dataset.maxDate = parseToISO(maxDateStr || '');
+        bookingForm.dataset.rate = rateStr || '';
+        bookingForm.dataset.colors = colorsRaw || '';
+        setDateLimits();
+        clearErrors();
+        updateSummary();
+        renderColorOptions(colorsRaw || '');
+    }
+
+    function closeBookingModal() {
+        bookingModal.classList.remove('show');
+        document.body.style.overflow = '';
+        bookingForm.dataset.color = '';
+    }
+
+    bookingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const car = bookingForm.dataset.car || 'سيارة';
+        const name = bookingForm.customerName.value.trim();
+        const phone = bookingForm.customerPhone.value.trim();
+        const email = bookingForm.customerEmail.value.trim();
+        const date = bookingForm.pickupDate.value;
+        const endDate = bookingForm.endDate.value;
+        const rateVal = bookingForm.dataset.rate || '';
+        const color = bookingForm.dataset.color || '';
+
+        const valid = validateAll({ name, phone, email, date, endDate });
+        if (!valid) return;
+
+        const rateNum = Number(rateVal.toString().replace(/[^\d.]/g, ''));
+        const startDateObj = date ? new Date(date) : null;
+        const endDateObj = endDate ? new Date(endDate) : null;
+        const diffDays = (startDateObj && endDateObj) ? Math.max(1, Math.round((endDateObj - startDateObj) / (1000 * 60 * 60 * 24))) : null;
+        const total = (Number.isFinite(rateNum) && diffDays) ? rateNum * diffDays : null;
+
+        const message = [
+            'طلب حجز جديد',
+            'السيارة: ' + car,
+            'الاسم: ' + name,
+            'الجوال: ' + phone,
+            'البريد: ' + email,
+            'تاريخ الاستلام: ' + date,
+            'نهاية الحجز: ' + endDate,
+            (color ? 'لون السيارة: ' + color : ''),
+            (diffDays ? 'عدد الأيام: ' + diffDays : ''),
+            (Number.isFinite(rateNum) ? 'السعر اليومي: ' + rateNum + ' ر.س' : ''),
+            (total ? 'الإجمالي: ' + total + ' ر.س' : '')
+        ].join('\n');
+
+        const waURL = 'https://wa.me/966500187855?text=' + encodeURIComponent(message);
+        window.open(waURL, '_blank');
+        bookingForm.reset();
+        clearErrors();
+        closeBookingModal();
+    });
+
+    function validateAll(fields) {
+        const normalizeDigits = (val = '') => val.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+
+        const name = fields.name;
+        const phone = normalizeDigits(fields.phone || '');
+        const email = fields.email || '';
+        const date = fields.date;
+        const endDate = fields.endDate;
+        let ok = true;
+        const color = bookingForm.dataset.color || '';
+
+        const phonePattern = /^05\d{8}$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!name) { nameError.style.display = 'block'; ok = false; } else nameError.style.display = 'none';
+        if (!phonePattern.test(phone)) { phoneError.style.display = 'block'; ok = false; } else phoneError.style.display = 'none';
+        if (!emailPattern.test(email)) { emailError.style.display = 'block'; ok = false; } else emailError.style.display = 'none';
+        const hasColorOptions = colorOptions && colorOptions.querySelector('.color-option');
+        if (hasColorOptions && !color) { colorError.style.display = 'block'; ok = false; } else if (colorOptions) colorError.style.display = 'none';
+        if (!validatePickup()) ok = false;
+        if (!validateEnd()) ok = false;
+        return ok;
+    }
+
+    function updateSummary() {
+        if (!pricingSummary) return;
+        const rateNum = Number((bookingForm.dataset.rate || '').toString().replace(/[^\d.]/g, ''));
+        const startDateObj = pickupInput && pickupInput.value ? new Date(pickupInput.value) : null;
+        const endDateObj = endInput && endInput.value ? new Date(endInput.value) : null;
+        const diffDays = (startDateObj && endDateObj) ? Math.max(1, Math.round((endDateObj - startDateObj) / (1000 * 60 * 60 * 24))) : null;
+        const total = (Number.isFinite(rateNum) && diffDays) ? rateNum * diffDays : null;
+
+        if (diffDays && Number.isFinite(rateNum)) {
+            pricingSummary.style.display = 'block';
+            daysSummary.textContent = 'عدد الأيام: ' + diffDays;
+            totalSummary.textContent = 'الإجمالي التقديري: ' + total + ' ر.س';
+        } else if (diffDays) {
+            pricingSummary.style.display = 'block';
+            daysSummary.textContent = 'عدد الأيام: ' + diffDays;
+            totalSummary.textContent = 'الإجمالي التقديري: —';
+        } else {
+            pricingSummary.style.display = 'none';
+            daysSummary.textContent = '—';
+            totalSummary.textContent = '—';
+        }
+    }
+
+    function setDateLimits() {
+        const today = new Date();
+        const isoToday = today.toISOString().split('T')[0];
+        const maxISO = bookingForm.dataset.maxDate || '';
+        if (pickupInput) pickupInput.min = isoToday;
+        if (pickupInput) pickupInput.max = maxISO || '';
+        if (endInput) {
+            endInput.min = pickupInput.value || isoToday;
+            endInput.max = maxISO || '';
+        }
+        if (pickupInput && pickupInput.value && pickupInput.value < pickupInput.min) {
+            pickupInput.value = pickupInput.min;
+        }
+        if (pickupInput && pickupInput.max && pickupInput.value && pickupInput.value > pickupInput.max) {
+            pickupInput.value = pickupInput.max;
+        }
+        validatePickup();
+        validateEnd();
+    }
+
+    if (pickupInput && endInput) {
+        pickupInput.addEventListener('change', () => {
+            endInput.min = pickupInput.value || endInput.min;
+            if (endInput.value && endInput.value < endInput.min) endInput.value = endInput.min;
+            validatePickup();
+            validateEnd();
+        });
+        setDateLimits();
+    }
+
+    function validatePickup() {
+        if (!pickupInput) return true;
+        const min = pickupInput.min;
+        const value = pickupInput.value;
+        const max = pickupInput.max;
+        if (value && min && value < min) {
+            pickupError.style.display = 'block';
+            pickupError.textContent = 'يجب أن يكون تاريخ الاستلام ' + min + ' أو بعده.';
+            return false;
+        }
+        if (value && max && value > max) {
+            pickupError.style.display = 'block';
+            pickupError.textContent = 'تاريخ الاستلام يجب أن يكون قبل أو في ' + max + '.';
+            return false;
+        }
+        pickupError.style.display = value ? 'none' : 'block';
+        updateSummary();
+        return !!value && (!min || value >= min) && (!max || value <= max);
+    }
+
+    function validateEnd() {
+        if (!endInput || !pickupInput) return true;
+        const endVal = endInput.value;
+        const minVal = endInput.min || pickupInput.value;
+        const maxVal = endInput.max || pickupInput.max;
+        if (endVal && minVal && endVal < minVal) {
+            endError.style.display = 'block';
+            endError.textContent = 'تاريخ نهاية الحجز يجب أن يكون بعد ' + minVal + '.';
+            return false;
+        }
+        if (endVal && maxVal && endVal > maxVal) {
+            endError.style.display = 'block';
+            endError.textContent = 'تاريخ نهاية الحجز يجب أن يكون قبل أو في ' + maxVal + '.';
+            return false;
+        }
+        endError.style.display = endVal ? 'none' : 'block';
+        updateSummary();
+        return !!endVal && (!minVal || endVal >= minVal) && (!maxVal || endVal <= maxVal);
+    }
+
+    function renderColorOptions(rawColors = '') {
+        if (!colorOptions) return;
+        colorOptions.innerHTML = '';
+        bookingForm.dataset.color = '';
+        colorError.style.display = 'none';
+        const colors = rawColors
+            .toString()
+            .split(/[\n,|]+/)
+            .map(c => c.trim())
+            .filter(Boolean);
+        if (colors.length === 0) {
+            colorOptions.innerHTML = '<span class="muted">لا تتوفر ألوان لهذا العرض حالياً.</span>';
+            return;
+        }
+        colors.forEach(color => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'color-option';
+            btn.textContent = color;
+            btn.addEventListener('click', () => {
+                colorOptions.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                bookingForm.dataset.color = color;
+                colorError.style.display = 'none';
+            });
+            colorOptions.appendChild(btn);
+        });
+    }
+
+    if (pickupInput) {
+        pickupInput.addEventListener('input', validatePickup);
+        pickupInput.addEventListener('invalid', (e) => e.preventDefault());
+    }
+    if (endInput) {
+        endInput.addEventListener('input', validateEnd);
+        endInput.addEventListener('invalid', (e) => e.preventDefault());
+    }
+
+    function clearErrors() {
+        [nameError, phoneError, emailError, pickupError, endError].forEach(el => { if (el) el.style.display = 'none'; });
+    }
+
+    if (nameInput) nameInput.addEventListener('input', () => nameError.style.display = 'none');
+    if (phoneInput) phoneInput.addEventListener('input', () => phoneError.style.display = 'none');
+    if (emailInput) emailInput.addEventListener('input', () => emailError.style.display = 'none');
+
+    function wireCardEvents(card) {
+        card.addEventListener('click', () => openCarDetails(card));
+        const desc = card.querySelector('.car-desc.more');
+        if (desc) {
+            desc.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openCarDetails(card);
+            });
+        }
+        const btn = card.querySelector('.detail-btn');
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (card.dataset.available === '0') return;
+                openBookingModal(card.dataset.name || 'سيارة', card.dataset.maxdate || '', card.dataset.rate || '', card.dataset.colors || '');
+            });
+        }
+    }
+
+    document.querySelectorAll('.car-item').forEach(wireCardEvents);
+    loadCarsFromSheet();
+
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeDetailModal(); });
+    bookingModal.addEventListener('click', (e) => { if (e.target === bookingModal) closeBookingModal(); });
+</script>
+
+</body>
+</html>
