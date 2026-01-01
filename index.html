@@ -211,6 +211,107 @@
         }
         .color-option:hover { border-color: rgba(29,155,240,0.35); box-shadow:0 6px 18px rgba(15,23,42,0.08); transform: translateY(-1px); }
         .color-option.selected { background: rgba(29,155,240,0.12); border-color: rgba(29,155,240,0.35); color: #0b1328; box-shadow:0 10px 26px rgba(15,23,42,0.12); }
+        .filters {
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin:0 0 14px;
+        }
+        .filters select, .filters input {
+            padding:10px 12px;
+            border:1px solid #d0dbef;
+            border-radius:12px;
+            font-family:"Cairo", Arial, sans-serif;
+            font-size:14px;
+            background:#eef3fb;
+            color:var(--text);
+            box-shadow:0 10px 24px rgba(15,23,42,0.08);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .filters input { min-width:180px; flex:1; }
+        .filters select {
+            min-width:160px;
+            appearance:none;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='10' viewBox='0 0 16 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2l6 6 6-6' stroke='%230b1328' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position: calc(100% - 12px) 50%;
+            padding-inline-end:32px;
+        }
+        .filters select:hover, .filters input:hover {
+            border-color: rgba(29,155,240,0.45);
+            box-shadow:0 14px 30px rgba(15,23,42,0.12);
+            background:#e8f1fd;
+        }
+        .filters select:focus, .filters input:focus {
+            outline:none;
+            border-color: rgba(29,155,240,0.7);
+            box-shadow:0 0 0 3px rgba(29,155,240,0.18);
+            background:#e8f1fd;
+        }
+        .filter-select {
+            position:relative;
+            min-width:180px;
+        }
+        .filter-selected {
+            width:100%;
+            padding:10px 12px;
+            border:1px solid #d0dbef;
+            border-radius:12px;
+            background:#eef3fb;
+            font-family:"Cairo", Arial, sans-serif;
+            font-size:14px;
+            color:var(--text);
+            text-align:right;
+            cursor:pointer;
+            box-shadow:0 10px 24px rgba(15,23,42,0.08);
+            display:flex; align-items:center; justify-content:space-between; gap:8px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .filter-selected:after {
+            content:"";
+            width:10px; height:6px;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='10' viewBox='0 0 16 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2l6 6 6-6' stroke='%230b1328' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-size:contain;
+            display:inline-block;
+        }
+        .filter-selected:hover, .filter-selected:focus {
+            border-color: rgba(29,155,240,0.45);
+            box-shadow:0 14px 30px rgba(15,23,42,0.12);
+            background:#e8f1fd;
+            outline:none;
+        }
+        .filter-options {
+            position:absolute;
+            top:calc(100% + 6px);
+            right:0;
+            min-width:100%;
+            background:#fff;
+            border:1px solid #d0dbef;
+            border-radius:12px;
+            box-shadow:0 18px 38px rgba(15,23,42,0.12);
+            padding:6px 0;
+            display:none;
+            z-index:5;
+        }
+        .filter-select.open .filter-options { display:block; }
+        .filter-option {
+            padding:10px 12px;
+            font-family:"Cairo", Arial, sans-serif;
+            font-size:14px;
+            color:var(--text);
+            cursor:pointer;
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+        .filter-option:hover {
+            background:rgba(29,155,240,0.12);
+            color:#0b1328;
+        }
+        .filter-option.active {
+            background:rgba(29,155,240,0.18);
+            color:#0b1328;
+            font-weight:800;
+        }
 
         @media (max-width: 640px) {
             header { padding:18px 14px; }
@@ -280,6 +381,21 @@
     <div class="section-head">
         <h2>سيارات مختارة لك</h2>
         <p>خيارات اقتصادية، عائلية، ورياضية بأسعار يومية واضحة</p>
+    </div>
+    <div class="filters" id="filtersWrapper">
+        <div class="filter-select" data-key="sub">
+            <button type="button" class="filter-selected">كل التصنيفات</button>
+            <div class="filter-options"></div>
+        </div>
+        <div class="filter-select" data-key="people">
+            <button type="button" class="filter-selected">كل أعداد الركاب</button>
+            <div class="filter-options"></div>
+        </div>
+        <div class="filter-select" data-key="company">
+            <button type="button" class="filter-selected">كل الشركات</button>
+            <div class="filter-options"></div>
+        </div>
+        <input id="filterSearch" type="search" placeholder="بحث بالاسم أو الوصف">
     </div>
 
     <div class="car-list" id="cars">
@@ -440,6 +556,10 @@
     const totalSummary = document.getElementById('totalSummary');
     const colorOptions = document.getElementById('colorOptions');
     const colorError = document.getElementById('colorError');
+    const filtersWrapper = document.getElementById('filtersWrapper');
+    const filterSearch = document.getElementById('filterSearch');
+    const filterSelects = filtersWrapper ? Array.from(filtersWrapper.querySelectorAll('.filter-select')) : [];
+    const selectedFilters = { sub: '', people: '', company: '' };
 
     const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyRBFgQ_jvROeb8qThERMAwOC0Y05FjuPzOxc286FOHRNlJuBS-eROOHNh-QWnk5HzJ/exec';
 
@@ -461,6 +581,9 @@
             }
 
             carsContainer.innerHTML = '';
+            const subs = new Set();
+            const peoples = new Set();
+            const companies = new Set();
             rows.forEach((row, idx) => {
                 const card = createCarCard({
                     name: row.Car_Name || `سيارة ${idx + 1}`,
@@ -476,8 +599,13 @@
                     sub: row.car_sub || row.Car_sub || ''
                 });
                 carsContainer.appendChild(card);
+                if (card.dataset.sub) subs.add(card.dataset.sub);
+                if (card.dataset.people) peoples.add(card.dataset.people);
+                if (card.dataset.company) companies.add(card.dataset.company);
             });
             carsContainer.querySelectorAll('.car-item').forEach(wireCardEvents);
+            populateFilters(subs, peoples, companies);
+            applyFilters();
         } catch (err) {
             console.warn('تعذر جلب السيارات:', err);
             carsContainer.innerHTML = '<p class="muted">تعذر تحميل السيارات من الشيت. تأكد من نشر السكربت بصلاحية "Anyone" ومن صحة الرابط.</p>';
@@ -826,6 +954,98 @@
             });
         }
     }
+
+    function populateFilters(subs, peoples, companies) {
+        const setOptions = (select, set, placeholder) => {
+            if (!select) return;
+            const current = select.value;
+            select.innerHTML = '';
+            const base = document.createElement('option');
+            base.value = '';
+            base.textContent = placeholder;
+            select.appendChild(base);
+            Array.from(set).sort().forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.textContent = val;
+                select.appendChild(opt);
+            });
+            select.value = current;
+        };
+        const setCustomOptions = (key, set, placeholder) => {
+            const selectWrap = filterSelects.find(fs => fs.dataset.key === key);
+            if (!selectWrap) return;
+            const selectedBtn = selectWrap.querySelector('.filter-selected');
+            const optionsBox = selectWrap.querySelector('.filter-options');
+            if (!selectedBtn || !optionsBox) return;
+            const current = selectedFilters[key] || '';
+            optionsBox.innerHTML = '';
+            selectedBtn.dataset.placeholder = placeholder;
+            const allOpt = document.createElement('div');
+            allOpt.className = 'filter-option' + (current === '' ? ' active' : '');
+            allOpt.textContent = placeholder;
+            allOpt.dataset.value = '';
+            optionsBox.appendChild(allOpt);
+            Array.from(set).sort().forEach(val => {
+                const opt = document.createElement('div');
+                opt.className = 'filter-option' + (current === val ? ' active' : '');
+                opt.textContent = val;
+                opt.dataset.value = val;
+                optionsBox.appendChild(opt);
+            });
+            selectedBtn.textContent = current || placeholder;
+        };
+        setCustomOptions('sub', subs, 'كل التصنيفات');
+        setCustomOptions('people', peoples, 'كل أعداد الركاب');
+        setCustomOptions('company', companies, 'كل الشركات');
+    }
+
+    function applyFilters() {
+        if (!carsContainer) return;
+        const subVal = selectedFilters.sub || '';
+        const peopleVal = selectedFilters.people || '';
+        const companyVal = selectedFilters.company || '';
+        const searchVal = (filterSearch && filterSearch.value) ? filterSearch.value.trim().toLowerCase() : '';
+
+        carsContainer.querySelectorAll('.car-item').forEach(card => {
+            const matchSub = !subVal || (card.dataset.sub || '').trim() === subVal;
+            const matchPeople = !peopleVal || (card.dataset.people || '').trim() === peopleVal;
+            const matchCompany = !companyVal || (card.dataset.company || '').trim() === companyVal;
+            const text = ((card.dataset.name || '') + ' ' + (card.dataset.desc || '')).toLowerCase();
+            const matchSearch = !searchVal || text.includes(searchVal);
+            card.style.display = (matchSub && matchPeople && matchCompany && matchSearch) ? '' : 'none';
+        });
+    }
+
+    filterSelects.forEach(selectWrap => {
+        const key = selectWrap.dataset.key;
+        const toggle = selectWrap.querySelector('.filter-selected');
+        const optionsBox = selectWrap.querySelector('.filter-options');
+        if (!toggle || !optionsBox) return;
+        toggle.addEventListener('click', () => {
+            const isOpen = selectWrap.classList.contains('open');
+            filterSelects.forEach(fs => fs.classList.remove('open'));
+            if (!isOpen) selectWrap.classList.add('open');
+        });
+        optionsBox.addEventListener('click', (e) => {
+            const opt = e.target.closest('.filter-option');
+            if (!opt) return;
+            const val = opt.dataset.value || '';
+            selectedFilters[key] = val;
+            optionsBox.querySelectorAll('.filter-option').forEach(o => o.classList.toggle('active', o === opt));
+            const placeholder = toggle.dataset.placeholder || toggle.textContent.trim();
+            toggle.textContent = val || placeholder;
+            applyFilters();
+            selectWrap.classList.remove('open');
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (!filtersWrapper) return;
+        if (!filtersWrapper.contains(e.target)) {
+            filterSelects.forEach(fs => fs.classList.remove('open'));
+        }
+    });
+    if (filterSearch) filterSearch.addEventListener('input', applyFilters);
 
     document.querySelectorAll('.car-item').forEach(wireCardEvents);
     loadCarsFromSheet();
